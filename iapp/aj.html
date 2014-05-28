@@ -1,4 +1,4 @@
-ï»¿
+
 <html>
 <head>
 <script type="text/javascript">
@@ -18,11 +18,10 @@ xmlhttp.onreadystatechange=function()
   if (xmlhttp.readyState==4 && xmlhttp.status==200)
     {
     var ck = new String(document.cookie);
-    alert(ck);
-    document.getElementById("idiv").innerHTML= xmlhttp.responseText;
+    document.getElementById("idiv").innerHTML= ck + xmlhttp.responseText;
     }
   }
-xmlhttp.open("GET","http://localhost:80/API/1.0/json/sys/Quote",true);
+xmlhttp.open("GET","http://192.168.0.92:80/API/1.0/json/sys/Quote",true);
 //xmlhttp.open("GET","http://t.api.ksbao.com/API/1.0/json/sys/Quote",true);
 xmlhttp.send();
 }
@@ -31,7 +30,7 @@ xmlhttp.send();
 <body>
 
 <div id="idiv"><h2>Let AJAX change this text</h2></div>
-<button type="button" onclick="loadXMLDoc()">é€šè¿‡ AJAX æ”¹å˜å†…å®¹</button>
+<button type="button" onclick="loadXMLDoc()">Í¨¹ı AJAX ¸Ä±äÄÚÈİ</button>
 
 </body>
 </html>

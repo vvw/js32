@@ -3,10 +3,11 @@
   "version": "0.0.1",
   "description": "node.js return a json ",
   "dependencies": {
-    "express": "*",
     "body-parser": "*",
     "cookie-parser": "*",
-    "express-session": "*"
+    "express": "*",
+    "express-session": "*",
+    "moment": "*"
   },
   "engine": "node >=0.6.x"
 }
