@@ -1,12 +1,18 @@
 'use strict'
-
+module.paths.push('G:/Users/w7/AppData/Roaming/npm/node_modules');
 var http = require('http');
 var request = require('request');
 var util = require('util');
 var fs = require('fs');
+var prettyjson = require('prettyjson');
 
 function j2s(j) {
     return JSON.stringify(j);
+}
+
+// string 转json
+function s2j(s) {
+    return JSON.parse(s);
 }
 
 function data(fname) {
@@ -21,7 +27,7 @@ function get(url, cb) {
   http.get(url, function(res) {
     re.statusCode = res.statusCode;
     res.on("data", function(chunk) {
-      re.data = chunk.toString();
+      re.data = s2j(chunk.toString());
       cb (re);
     });
   }).on('error', function(e) {
@@ -30,38 +36,11 @@ function get(url, cb) {
   });
 }
 
-get ("http://127.0.0.1:9200/_cluster/health?pretty", function(re) {
-  console.log (re);
-});
-
-http.get("http://127.0.0.1:9200/_cluster/health?pretty", function(res) {
-  console.log("Got response: " + res.statusCode);
-  res.on("data", function(chunk) {
-    console.log(chunk.toString());
-  });
-}).on('error', function(e) {
-  console.log("Got error: " + e.message);
-});
-
-
 var j = {
 	"title" : "Mr. Harding's Defeat",
 	"content" : html,
 	tags : ["time", "1923", "Congress"] 
 }
-//console.log(j);
-
-// request.post(
-//     'http://127.0.0.1:9200/magazine/time/1',
-//     j,
-//     function (error, response, body) {
-//       console.log (response.statusCode);
-//         if (!error && response.statusCode == 200) {
-//             console.log(body)
-//         }
-//         if (error) console.log(error)
-//     }
-// );
 
 request(
   { url: 'http://127.0.0.1:9200/magazine/time/1',
@@ -70,10 +49,19 @@ request(
   },
   function(error, request, body) {
     if (error) console.log(error);
-    console.log (request.statusCode);
-    console.log(body);
+    //console.log (request.statusCode);
+    //console.log(body);
   }
 )
+
+get ("http://127.0.0.1:9200/_cluster/health?pretty", function(re) {
+  //console.log (re);
+  console.log(prettyjson.render(re, {noColor: true}));
+});
+
+get ("http://127.0.0.1:9200/magazine/time/1", function(re) {
+  //console.log (re);
+});
 
 // (function(){
 //   "use strict";
