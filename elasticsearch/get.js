@@ -42,13 +42,47 @@ function get(url, cb) {
 	)
 }
 
+function get2(url, json, cb) {
+	var re = {err : false};
+	request(
+  		{
+  			url: url,
+    		method: 'get',
+    		json: j
+  		},
+  		function(error, request, body) {
+    		if (error) {re.err = error.message;}
+    		re.statusCode = request.statusCode;
+    		re.data = body;
+    		cb (re);
+  		}
+	);
+}
+
 function put(url, json, cb) {
 	var re = {err : false};
 	request(
   		{
   			url: url,
     		method: 'PUT',
-    		json: j
+    		json: json
+  		},
+  		function(error, request, body) {
+    		if (error) {re.err = error.message;}
+    		re.statusCode = request.statusCode;
+    		re.data = body;
+    		cb (re);
+  		}
+	);
+}
+
+function POST(url, json, cb) {
+	var re = {err : false};
+	request(
+  		{
+  			url: url,
+    		method: 'POST',
+    		json: json
   		},
   		function(error, request, body) {
     		if (error) {re.err = error.message;}
@@ -63,14 +97,93 @@ var j = {
 	"title" : "Mr. Harding's Defeat",
 	"content" : html,
 	tags : ["time", "1923", "Congress"] 
-}
+};
 
- put ('http://127.0.0.1:9200/magazine/time/1', j, function (re) {
-	console.log(pretty(re));
-	get ('http://127.0.0.1:9200/magazine/time/1', function (re) {
-		console.log(pretty(re));
+ //put ('http://127.0.0.1:9200/magazine/time/1', j, function (re) {
+	//console.log(pretty(re));
+	// get ('http://127.0.0.1:9200/magazine/time/1', function (re) {
+	get ("http://127.0.0.1:9200/magazine/time/_search?q=title:Mr. Harding's Defeat", function (re) {
+		//console.log(pretty(re));
  	})
- })
+// })
+
+	get2 ("http://127.0.0.1:9200/magazine/time/_search", tt,function (re) {
+		//console.log(pretty(re));
+ 	})
+
+   // GET /megacorp/employee/_search
+
+    var tt={
+
+        "query" : {
+
+            "match" : {
+
+                "title" : "Mr. Harding's Defeat"
+
+            }
+
+        }
+
+    }
 
 console.log ('hi,,')
+
+
+function putdata () {
+	var d1 = {
+    "first_name" : "John",
+
+    "last_name" :  "Smith",
+
+    "age" :        25,
+
+    "about" :      "I love to go rock climbing",
+
+    "interests": [ "sports", "music" ]
+
+	};
+	var d2 = {
+
+    "first_name" :  "Jane",
+
+    "last_name" :   "Smith",
+
+    "age" :         32,
+
+    "about" :       "I like to collect rock albums",
+
+    "interests":  [ "music" ]
+	};
+	var d3 = {
+
+    "first_name" :  "Douglas",
+
+    "last_name" :   "Fir",
+
+    "age" :         35,
+
+    "about":        "I like to build cabinets",
+
+    "interests":  [ "forestry" ]
+	};
+	put ('http://127.0.0.1:9200/megacorp/employee/1', d1, function (re) {
+		//console.log(pretty(re));
+	});
+	put ('http://127.0.0.1:9200/megacorp/employee/2', d2, function (re) {
+		//console.log(pretty(re));
+	});
+	put ('http://127.0.0.1:9200/megacorp/employee/3', d3, function (re) {
+		//console.log(pretty(re));
+	});
+}
+putdata ();
+
+	get ('http://127.0.0.1:9200/megacorp/employee/1', function (re) {
+		//console.log(pretty(re));
+	});
+
+	POST ('http://127.0.0.1:9200/megacorp/employee/_search', {"query":{"match":{"last_name":"Smith"}}}, function (re) {
+		console.log(pretty(re));
+	});
 
