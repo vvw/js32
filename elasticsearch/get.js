@@ -42,22 +42,22 @@ function get(url, cb) {
 	)
 }
 
-function get2(url, json, cb) {
-	var re = {err : false};
-	request(
-  		{
-  			url: url,
-    		method: 'get',
-    		json: j
-  		},
-  		function(error, request, body) {
-    		if (error) {re.err = error.message;}
-    		re.statusCode = request.statusCode;
-    		re.data = body;
-    		cb (re);
-  		}
-	);
-}
+// function get2(url, json, cb) {
+// 	var re = {err : false};
+// 	request(
+//   		{
+//   			url: url,
+//     		method: 'get',
+//     		json: j
+//   		},
+//   		function(error, request, body) {
+//     		if (error) {re.err = error.message;}
+//     		re.statusCode = request.statusCode;
+//     		re.data = body;
+//     		cb (re);
+//   		}
+// 	);
+// }
 
 function put(url, json, cb) {
 	var re = {err : false};
@@ -107,7 +107,7 @@ var j = {
  	})
 // })
 
-	get2 ("http://127.0.0.1:9200/magazine/time/_search", tt,function (re) {
+	get ("http://127.0.0.1:9200/magazine/time/_search", function (re) {
 		//console.log(pretty(re));
  	})
 
@@ -184,6 +184,56 @@ putdata ();
 	});
 
 	POST ('http://127.0.0.1:9200/megacorp/employee/_search', {"query":{"match":{"last_name":"Smith"}}}, function (re) {
+		//console.log(pretty(re));
+	});
+
+/////////////////////////////
+function putdata2() {
+var d1= {
+  "name": "Multi G. Enre",
+  "books": [
+    {
+      "name": "Guns and lasers",
+      "genre": "scifi",
+      "publisher": "orbit"
+    },
+    {
+      "name": "Dead in the night",
+      "genre": "thriller",
+      "publisher": "penguin"
+    }
+  ]
+};
+var d2 = {
+  "name": "Alastair Reynolds",
+  "books": [
+    {
+      "name": "Revelation Space",
+      "genre": "scifi",
+      "publisher": "penguin"
+    }
+  ]
+};
+	put ('http://127.0.0.1:9200/authors/author/1', d1, function (re) {
+		//console.log(pretty(re));
+	});
+	put ('http://127.0.0.1:9200/authors/author/2', d2, function (re) {
+		//console.log(pretty(re));
+	});
+
+	POST ('http://127.0.0.1:9200/authors/nested_author/_mapping', {"nested_author":{"properties":{"books":{"type":"nested"}}}}, function (re) {
 		console.log(pretty(re));
 	});
+	
+
+}
+putdata2()
+
+// finds both authors - you can’t express that your conditions on published and genre need to match against the same book.
+	POST ('http://127.0.0.1:9200/authors/author/_search', 
+		{"query":{"filtered":{"query":{"match_all":{}},"filter":{"and":[{"term":{"books.publisher":"penguin"}},{"term":{"books.genre":"scifi"}}]}}}},
+		 function (re) {
+		//console.log(pretty(re));
+	});
+
 
