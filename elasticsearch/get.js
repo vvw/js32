@@ -42,23 +42,6 @@ function get(url, cb) {
 	)
 }
 
-// function get2(url, json, cb) {
-// 	var re = {err : false};
-// 	request(
-//   		{
-//   			url: url,
-//     		method: 'get',
-//     		json: j
-//   		},
-//   		function(error, request, body) {
-//     		if (error) {re.err = error.message;}
-//     		re.statusCode = request.statusCode;
-//     		re.data = body;
-//     		cb (re);
-//   		}
-// 	);
-// }
-
 function put(url, json, cb) {
 	var re = {err : false};
 	request(
@@ -75,6 +58,40 @@ function put(url, json, cb) {
   		}
 	);
 }
+
+// put, no data to be sent
+function put2(url, cb) {
+	var re = {err : false};
+	request(
+  		{
+  			url: url,
+    		method: 'PUT',
+  		},
+  		function(error, request, body) {
+    		if (error) {re.err = error.message;}
+    		re.statusCode = request.statusCode;
+    		re.data = body;
+    		cb (re);
+  		}
+	);
+}
+
+function del(url, cb) {
+	var re = {err : false};
+	request(
+  		{
+  			url: url,
+    		method: 'DELETE',
+  		},
+  		function(error, request, body) {
+    		if (error) {re.err = error.message;}
+    		re.statusCode = request.statusCode;
+    		re.data = body;
+    		cb (re);
+  		}
+	);
+}
+
 
 function POST(url, json, cb) {
 	var re = {err : false};
@@ -110,8 +127,6 @@ var j = {
 	get ("http://127.0.0.1:9200/magazine/time/_search", function (re) {
 		//console.log(pretty(re));
  	})
-
-   // GET /megacorp/employee/_search
 
     var tt={
 
@@ -222,12 +237,18 @@ var d2 = {
 	});
 
 	POST ('http://127.0.0.1:9200/authors/nested_author/_mapping', {"nested_author":{"properties":{"books":{"type":"nested"}}}}, function (re) {
-		console.log(pretty(re));
+		//console.log(pretty(re));
+	});
+	put ('http://127.0.0.1:9200/authors/nested_author/1', d1, function (re) {
+		//console.log(pretty(re));
+	});
+	put ('http://127.0.0.1:9200/authors/nested_author/2', d2, function (re) {
+		//console.log(pretty(re));
 	});
 	
 
 }
-putdata2()
+putdata2();
 
 // finds both authors - you can’t express that your conditions on published and genre need to match against the same book.
 	POST ('http://127.0.0.1:9200/authors/author/_search', 
@@ -235,5 +256,144 @@ putdata2()
 		 function (re) {
 		//console.log(pretty(re));
 	});
+
+// This allows you to say that you are looking for authors where at least one book satisfies both of your criteria.
+	POST ('http://127.0.0.1:9200/authors/nested_author/_search', 
+		{"query":{"filtered":{"query":{"match_all":{}},"filter":{"nested":{"path":"books","query":{"filtered":{"query":{"match_all":{}},"filter":{"and":[{"term":{"books.publisher":"penguin"}},{"term":{"books.genre":"scifi"}}]}}}}}}}},
+		 function (re) {
+		//console.log(pretty(re));
+	});
+
+
+function putdata3() {
+var mapping = {
+  "book": {
+    "properties": {
+      "author": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "object",
+            "properties": {
+              "firstName": {
+                "type": "string",
+                "store": "yes"
+              },
+              "lastName": {
+                "type": "string",
+                "store": "yes"
+              }
+            }
+          }
+        }
+      },
+      "isbn": {
+        "type": "string",
+        "store": "yes"
+      },
+      "englishTitle": {
+        "type": "string",
+        "store": "yes"
+      },
+      "year": {
+        "type": "integer",
+        "store": "yes"
+      },
+      "characters": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "store": "yes"
+          }
+        }
+      },
+      "copies": {
+        "type": "integer",
+        "store": "yes"
+      }
+    }
+  }
+};
+
+	// put2 ('http://127.0.0.1:9200/library', function (re) {
+	// 	console.log (pretty(re));
+	// });
+
+	// del ('http://127.0.0.1:9200/library', function (re) {
+	// 	console.log (pretty(re));
+	// }); 
+
+	// POST ('http://127.0.0.1:9200/library/book/_mapping', 
+	// 	mapping,
+	// 	function (re) {
+	// 	console.log(pretty(re));
+	// });
+
+}
+
+putdata3()
+
+
+
+// curl -XPUT 'localhost:9200/library'
+
+
+
+
+// {
+//   "book": {
+//     "properties": {
+//       "author": {
+//         "type": "object",
+//         "properties": {
+//           "name": {
+//             "type": "object",
+//             "properties": {
+//               "firstName": {
+//                 "type": "string",
+//                 "store": "yes"
+//               },
+//               "lastName": {
+//                 "type": "string",
+//                 "store": "yes"
+//               }
+//             }
+//           }
+//         }
+//       },
+//       "isbn": {
+//         "type": "string",
+//         "store": "yes"
+//       },
+//       "englishTitle": {
+//         "type": "string",
+//         "store": "yes"
+//       },
+//       "year": {
+//         "type": "integer",
+//         "store": "yes"
+//       },
+//       "characters": {
+//         "properties": {
+//           "name": {
+//             "type": "string",
+//             "store": "yes"
+//           }
+//         }
+//       },
+//       "copies": {
+//         "type": "integer",
+//         "store": "yes"
+//       }
+//     }
+//   }
+// }
+
+
+
+
+
+
+
 
 
