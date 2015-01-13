@@ -389,7 +389,72 @@ putdata3()
 //   }
 // }
 
+/*
+mapping
+{
+  "cloth": {
+    "properties": {
+      "name": {
+        "type": "string",
+        "index": "analyzed"
+      },
+      "variation": {
+        "type": "nested",
+        "properties": {
+          "size": {
+            "type": "string",
+            "index": "not_analyzed"
+          },
+          "color": {
+            "type": "string",
+            "index": "not_analyzed"
+          }
+        }
+      }
+    }
+  }
+}
 
+document
+{
+  "name": "Test shirt",
+  "variation": [
+    {
+      "size": "XXL",
+      "color": "red"
+    },
+    {
+      "size": "XL",
+      "color": "black"
+    }
+  ]
+}
+
+query
+curl -XGET 'localhost:9200/shop/cloth/_search?pretty=true' -d '{
+  "query": {
+    "nested": {
+      "path": "variation",
+      "query": {
+        "bool": {
+          "must": [
+            {
+              "term": {
+                "variation.size": "XXL"
+              }
+            },
+            {
+              "term": {
+                "variation.color": "black"
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+}'
+*/
 
 
 
