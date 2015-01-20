@@ -42,6 +42,28 @@ function get(url, cb) {
 	)
 }
 
+// request({ url:'http://cnb.cx/1vtyQyv', method: 'HEAD' }, function(err, res) {
+//     console.log(err, res);
+// });
+
+function head(url, cb) {
+  var re = {err : false};
+  request (
+      {
+        url: url,
+        method: 'HEAD'
+      },
+      function (error, res) {
+        if ( error ) {re.err = error.message;}
+        re.statusCode = res.statusCode;
+        cb (re);
+        //re.headers = res.headers;
+        //re.data = s2j ( body.toString() );
+        
+      }
+  )
+}
+
 function put(url, json, cb) {
 	var re = {err : false};
 	request(
@@ -109,6 +131,11 @@ function POST(url, json, cb) {
   		}
 	);
 }
+
+// healthQ
+  get ("http://127.0.0.1:9200/_cluster/health?pretty", function (re) {
+    //console.log(pretty(re));
+  })
 
 var j = {
 	"title" : "Mr. Harding's Defeat",
@@ -333,7 +360,61 @@ var mapping = {
 
 putdata3()
 
+// time
+function putdata4() {
+  var dt = {
+    year: 1923,
+    article: {
+      title: "Mr. Harding's Defeat ",
+      time: "Saturday, Mar. 03, 1923",
+      content: [
+        "Seeking only the nation's welfare, Mr. Harding has suffered defeat at the hands of Congress. Not only that, but the man who was elected President by the largest plurality in history has been reproved by a Congress controlled by his own party. ",
+        "The Ship Subsidy Bill, never popular, and never made so by the President, was politely strangled to death.",
+        "The wisdom of some of the most important of the President's appointments has been questioned. For example, Daugherty, Butler, Reily."
+      ]
+    }
+  };
+  var mapping = {
+    "time": {
+      // time 表示名为time 的文件夹中存放的是具有这种结构的documents
+      "properties": {
+        // properties 表示document 中有这几个字段
+        "year": {
+          "type": "integer"
+        }, // year 表示这个字段的名字， type 表示这个字段的类型
+        "title": {
+          "type": "string"
+        },
+        "time": {
+          "type": "string"
+        },
+        "content": {
+          "type": "string"
+        }
+      }
+    }
+  }
 
+  head ("http://localhost:9200/magazine/", function (re) {
+    if (re.statusCode == 404) {
+      console.log ('index magazine not exits, create it now...');
+
+    } else {
+      console.log ('index magazine exits, delete it now...');
+    }
+    //console.log (re);
+    //console.log (pretty(re));
+  })
+  // put ("http://localhost:9200/magazine/_mapping", mapping, function (re) {
+  //   console.log (pretty(re));
+  // })
+  //localhost:9200/books/_mapping?pretty
+}
+ putdata4()
+
+  // put2 ('http://127.0.0.1:9200/library', function (re) {
+  //  console.log (pretty(re));
+  // });
 
 // curl -XPUT 'localhost:9200/library'
 
