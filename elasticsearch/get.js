@@ -398,9 +398,23 @@ function putdata4() {
   head ("http://localhost:9200/magazine/", function (re) {
     if (re.statusCode == 404) {
       console.log ('index magazine not exits, create it now...');
-
+      put2 ("http://localhost:9200/magazine/", function (re) {
+        console.log (pretty(re));
+        // PUT /planet/hacker/_mapping
+        console.log ('create mapping now...');
+        put ("http://localhost:9200/magazine/time/_mapping", mapping, function (re) {
+          console.log (pretty(re));
+          get ("http://localhost:9200/magazine/time/_mapping", function (re) {
+            console.log (pretty(re));
+          });
+        });
+      });
     } else {
       console.log ('index magazine exits, delete it now...');
+      del ("http://localhost:9200/magazine/", function (re) {
+        console.log (pretty(re));
+      });
+      //  PUT /magazine
     }
     //console.log (re);
     //console.log (pretty(re));
