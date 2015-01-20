@@ -400,12 +400,18 @@ function putdata4() {
       console.log ('index magazine not exits, create it now...');
       put2 ("http://localhost:9200/magazine/", function (re) {
         console.log (pretty(re));
-        // PUT /planet/hacker/_mapping
         console.log ('create mapping now...');
         put ("http://localhost:9200/magazine/time/_mapping", mapping, function (re) {
           console.log (pretty(re));
           get ("http://localhost:9200/magazine/time/_mapping", function (re) {
             console.log (pretty(re));
+             console.log ('adding documents now...');
+            put ("http://localhost:9200/magazine/time/1", dt, function (re) {
+               console.log (pretty(re));
+                get ("http://localhost:9200/magazine/time/1", function (re) {
+                  console.log (pretty(re));
+                });
+            });
           });
         });
       });
