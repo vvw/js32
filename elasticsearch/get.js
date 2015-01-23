@@ -115,7 +115,7 @@ function del(url, cb) {
 }
 
 
-function POST(url, json, cb) {
+function post(url, json, cb) {
 	var re = {err : false};
 	request(
   		{
@@ -225,7 +225,7 @@ putdata ();
 		//console.log(pretty(re));
 	});
 
-	POST ('http://127.0.0.1:9200/megacorp/employee/_search', {"query":{"match":{"last_name":"Smith"}}}, function (re) {
+	post ('http://127.0.0.1:9200/megacorp/employee/_search', {"query":{"match":{"last_name":"Smith"}}}, function (re) {
 		//console.log(pretty(re));
 	});
 
@@ -263,7 +263,7 @@ var d2 = {
 		//console.log(pretty(re));
 	});
 
-	POST ('http://127.0.0.1:9200/authors/nested_author/_mapping', {"nested_author":{"properties":{"books":{"type":"nested"}}}}, function (re) {
+	post ('http://127.0.0.1:9200/authors/nested_author/_mapping', {"nested_author":{"properties":{"books":{"type":"nested"}}}}, function (re) {
 		//console.log(pretty(re));
 	});
 	put ('http://127.0.0.1:9200/authors/nested_author/1', d1, function (re) {
@@ -278,17 +278,17 @@ var d2 = {
 putdata2();
 
 // finds both authors - you can’t express that your conditions on published and genre need to match against the same book.
-	POST ('http://127.0.0.1:9200/authors/author/_search', 
+	post ('http://127.0.0.1:9200/authors/author/_search', 
 		{"query":{"filtered":{"query":{"match_all":{}},"filter":{"and":[{"term":{"books.publisher":"penguin"}},{"term":{"books.genre":"scifi"}}]}}}},
 		 function (re) {
 		//console.log(pretty(re));
 	});
 
 // This allows you to say that you are looking for authors where at least one book satisfies both of your criteria.
-	POST ('http://127.0.0.1:9200/authors/nested_author/_search', 
+	post ('http://127.0.0.1:9200/authors/nested_author/_search', 
 		{"query":{"filtered":{"query":{"match_all":{}},"filter":{"nested":{"path":"books","query":{"filtered":{"query":{"match_all":{}},"filter":{"and":[{"term":{"books.publisher":"penguin"}},{"term":{"books.genre":"scifi"}}]}}}}}}}},
 		 function (re) {
-		//console.log(pretty(re));
+		console.log(pretty(re));
 	});
 
 
@@ -364,15 +364,16 @@ putdata3()
 function putdata4() {
   var dt = {
     year: 1923,
-    article: {
-      title: "Mr. Harding's Defeat ",
+    // article: {
+      //title: "Mr. Harding's Defeat",
+      title: "defeat",
       time: "Saturday, Mar. 03, 1923",
       content: [
         "Seeking only the nation's welfare, Mr. Harding has suffered defeat at the hands of Congress. Not only that, but the man who was elected President by the largest plurality in history has been reproved by a Congress controlled by his own party. ",
         "The Ship Subsidy Bill, never popular, and never made so by the President, was politely strangled to death.",
         "The wisdom of some of the most important of the President's appointments has been questioned. For example, Daugherty, Butler, Reily."
       ]
-    }
+    // }
   };
   var mapping = {
     "time": {
@@ -410,36 +411,32 @@ function putdata4() {
                console.log (pretty(re));
                 get ("http://localhost:9200/magazine/time/1", function (re) {
                   console.log (pretty(re));
+                  console.log ('################ now do the query...');
+                  var q = {
+                    "query": {
+                      "match": {
+                        "title": "defeat"
+                      }
+                    }
+                  };
+                  post ('http://127.0.0.1:9200/magazine/time/_search', q, function (re) {
+                    console.log(pretty(re));
+                  });
                 });
             });
           });
         });
-      });
+      });  
     } else {
       console.log ('index magazine exits, delete it now...');
       del ("http://localhost:9200/magazine/", function (re) {
         console.log (pretty(re));
       });
-      //  PUT /magazine
     }
-    //console.log (re);
-    //console.log (pretty(re));
   })
-  // put ("http://localhost:9200/magazine/_mapping", mapping, function (re) {
-  //   console.log (pretty(re));
-  // })
-  //localhost:9200/books/_mapping?pretty
 }
- putdata4()
 
-  // put2 ('http://127.0.0.1:9200/library', function (re) {
-  //  console.log (pretty(re));
-  // });
-
-// curl -XPUT 'localhost:9200/library'
-
-
-
+//putdata4()
 
 // {
 //   "book": {
