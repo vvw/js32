@@ -67,11 +67,56 @@ PUT http://localhost:9200/myindex/eType/1
   }
 }
 
+PUT http://localhost:9200/myindex/eType/2
+{
+  "eId": "456",
+  "eData": {
+    "bData": {
+      "reviewList": [
+        {
+          "id": "1950158",
+          "author": "fancylaw",
+          "text": "I love this Beauty salon. The staff is friendly and professional. ",
+          "rating": "5",
+          "date": "2007-07-23"
+        },
+        {
+          "id": "1950159",
+          "author": "mmeylor",
+          "text": "I called & asked the price of a haircut & was told $45.  When I got there I found out that if I wanted it blow dryed it would actually be $80!  ",
+          "rating": "1",
+          "date": "2009-03-20"
+        }
+      ],
+      "categoryList": [
+        "Beauty & Spas",
+        "Hair Care & Salons",
+        "Wigs Toupees & Hairpieces"
+      ]
+    },
+    "contact": {
+      "streetAddress": "124 1/2 N Larchmont Blvd",
+      "phone": "3234612979",
+      "website": "http://www.jessica.com",
+      "country": "China",
+      "addressLocality": "Los Angeles",
+      "postalCode": "90004",
+      "email": "ssh...@gmail.com",
+      "addressRegion": "CX",
+      "googlePlusUrl": "http://googleplus",
+      "name": "Jessica's Pretty",
+      "twitterUrl": "http://twitter"
+    }
+  }
+}
+
+
 GET http://localhost:9200/myindex/eType/1
+GET http://localhost:9200/myindex/eType/2
 
 POST http://localhost:9200/myindex/eType/_search
 {
- "fields" : ["eData.contact.name"],
+ "fields" : ["eData.contact.name","eData.contact.country"],
  "query": {
        "nested": {
            "path": "eData.contact",
@@ -87,7 +132,24 @@ POST http://localhost:9200/myindex/eType/_search
        }
    }
 }
-
+POST http://localhost:9200/myindex/eType/_search
+{
+ "fields" : ["eData.contact.name","eData.contact.country"],
+ "query": {
+       "nested": {
+           "path": "eData.contact",
+           "score_mode": "max",
+           "query": {
+               "query_string": {
+                   "fields": [
+                       "eData.contact.name"
+                   ],
+                   "query": "Pretty"
+               }
+           }
+       }
+   }
+}
 
 
 
