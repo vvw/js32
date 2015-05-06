@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Ch1Ex3: Your First Canvas Application </title>
+<script src="modernizr.js"></script>
+<script type="text/javascript">
+window.addEventListener("load", eventWindowLoaded, false);	
+
+var theCanvas;
+var context;
+
+var mouseX = -1;
+var mouseY = -1;
+var mouseOverQ = false;
+var menuQ = false;
+
+var helloWorldImage;
+var helloWorldImage2;
+var menu;
+var ImageWidth = -1;
+var ImageHeigth = -1;
+var ImagePos = { "x" : 0, "y" : 0 };
+
+var Debugger = function () { };
+Debugger.log = function (message) {
+	try {
+		console.log(message);
+	} catch (exception) {
+		return;
+	}
+}
+
+function eventWindowLoaded () {
+	canvasApp();
+}
+
+function canvasSupport () {
+	return !!document.createElement('canvas').getContext;
+  	//return Modernizr.canvas;
+}
+
+function canvasApp () {
+  		
+  		if (!canvasSupport()) {
+  			window.alert("not support canvas");
+			return;
+  		}
+		
+		theCanvas = document.getElementById("canvasOne");
+		theCanvas.addEventListener("mousemove", onMouseMove, false);
+		theCanvas.addEventListener("click", onMouseLeftClick, false);
+		theCanvas.addEventListener('contextmenu', onMouseRightClick, false);  
+		function onMouseMove(e) {
+      		mouseX = e.clientX-theCanvas.offsetLeft;
+      		mouseY = e.clientY-theCanvas.offsetTop;
+      		console.log (mouseX, mouseY);  // 这对坐标值已经加上了外层div 的偏移值。减掉就是canvas 的相对位置了
+      			// <div style="position: absolute; top: 100px; left: 100px;">
+      		// 手动对图片检测mouseOver
+      		if ( mouseX >= ImagePos.x && mouseX <= ImagePos.x + ImageWidth ) {
+      			if ( mouseY >= ImagePos.y && mouseY <= ImagePos.y + ImageHeigth ) {
+      				console.log ('###mouse over on image');
+      				if (!mouseOverQ && !menuQ) {
+      					mouseOverQ = true;
+      					context.clearRect(0, 0, ImageWidth, ImageHeigth);
+						context.drawImage(helloWorldImage2, ImagePos.x, ImagePos.y);
+					}
+				} else {
+					if (mouseOverQ && !menuQ) {
+						mouseOverQ = false;
+						//context.clearRect(0, 0, ImageWidth, ImageHeigth);
+						//context.drawImage(helloWorldImage, ImagePos.x, ImagePos.y);
+						reDrawScreen();
+					}
+				}
+      		} else {
+      			if (mouseOverQ && !menuQ) {
+					mouseOverQ = false;
+					//context.clearRect(0, 0, ImageWidth, ImageHeigth);
+					//context.drawImage(helloWorldImage, ImagePos.x, ImagePos.y);
+					reDrawScreen();
+				}
+      		}
+      		//}
+   		}
+
+   		function onMouseLeftClick(e) {
+   			console.log ('left click: ' + mouseX + ',' + mouseY); 
+   			if (menuQ) {
+   				menuQ = false;
+   				mouseOverQ = false;
+   				reDrawScreen();
+   			}
+   		}
+
+   		    // listen for contextmenu requests
+  
+
+    function onMouseRightClick(e){
+      console.log ('right click: ' + mouseX + ',' + mouseY);
+      if (mouseOverQ && ! menuQ) {
+      	menuQ = true;
+   	    context.drawImage(menu, mouseX, mouseY);			
+   	  }
+      // prevents the usual context from popping up
+      e.preventDefault();
+      return(false); 
+    }
+
+		context = theCanvas.getContext("2d");
+		Debugger.log("Drawing Canvas");
+
+		function reDrawScreen() {
+			context.clearRect(0, 0, 500, 500);
+			context.fillStyle = "#ffffaa";
+  			context.fillRect(0, 0, 500, 500);
+			//text
+			context.fillStyle    = "#000000";
+			context.font         = "20px Sans-Serif";
+			context.textBaseline = "top";
+			context.fillText  ("Hello World!", 195, 80 );
+			context.strokeStyle = "#000000"; 
+			context.strokeRect(5,  5, 490, 290);
+			context.drawImage(helloWorldImage, ImagePos.x, ImagePos.y);
+		}
+		
+  		function drawScreen() {
+			//background
+			context.fillStyle = "#ffffaa";
+  			context.fillRect(0, 0, 500, 500);
+			
+			//text
+			context.fillStyle    = "#000000";
+			context.font         = "20px Sans-Serif";
+			context.textBaseline = "top";
+			context.fillText  ("Hello World!", 195, 80 );
+			
+			//image
+			helloWorldImage = new Image();
+			helloWorldImage.onload = function () {
+				ImageWidth = helloWorldImage.width;
+				ImageHeigth = helloWorldImage.height;
+				context.drawImage(helloWorldImage, ImagePos.x, ImagePos.y);
+			}
+			helloWorldImage.src = "my_com.png";
+			
+
+			helloWorldImage2 = new Image();
+			helloWorldImage2.onload = function () {
+				//context.drawImage(helloWorldImage, ImagePos.x, ImagePos.y);;
+			}
+			helloWorldImage2.src = "my_com2.png";
+
+			menu = new Image();
+			menu.onload = function () {
+			}
+			menu.src = "menu.jpg";
+
+			context.strokeStyle = "#000000"; 
+			context.strokeRect(5,  5, 490, 290);
+			
+		}
+		
+		drawScreen();
+
+		
+}
+
+
+</script> 
+</head>
+<body>
+<div style="position: absolute; top: 0px; left: 0px;">
+<canvas id="canvasOne" width="500" height="500">
+
+ Your browser does not support HTML 5 Canvas. 
+</canvas>
+</div>
+</body>
+</html>
+
+
+
+

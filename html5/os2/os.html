@@ -1,0 +1,154 @@
+<!doctype html>
+<html>
+<head>
+	<title>canvas amnimation</title>
+	<script src=js/ul.js></script>
+	<script>
+		var mouseX = -1;
+		var mouseY = -1;
+		var rootCanvas;
+		var computerCanvas;
+		var garbageCanvas;
+		var documentCanvas;
+		window.addEventListener("load", onWindowLoaded, false);
+		function onWindowLoaded () {
+			if (!canvasSupportQ()) {
+  				window.alert("not support canvas");
+				return;
+  			}
+  			rootCanvas = document.createElement("canvas");
+  			createChildCanvas();
+			document.body.appendChild(rootCanvas);
+			rootCanvas.addEventListener("mousemove", onMouseMove, false);
+			rootCanvas.addEventListener("click", onMouseLeftClick, false);
+			drawRootCanvas(rootCanvas, function (err, msg) {
+				if (err) throw err;
+				console.log (msg);
+				initCanvas (computerCanvas, 0, 0);
+				initCanvas (documentCanvas,  0, 80);
+				initCanvas (garbageCanvas,  0, 160);
+			});
+
+		}
+
+		function onMouseMove(e) {
+      		mouseX = e.clientX-rootCanvas.offsetLeft;
+      		mouseY = e.clientY-rootCanvas.offsetTop;
+      		console.log (mouseX, mouseY);
+      		if (true) {
+      		var canvasArr = [computerCanvas, documentCanvas, garbageCanvas];
+			var canvas = whichHit (canvasArr);
+			if (canvas != null && !canvas.clickedQ) {
+				canvas.mouseOverQ = true;
+				drawCanvas (canvas, rootCanvas, canvas.images[1], function (err, msg) {
+					if (err) throw err;
+					console.log (msg);
+				});
+			} else {
+				var ca = whichMouseOver (canvasArr);
+				if (ca != null && !ca.clickedQ) {
+					ca.mouseOverQ = false;
+					drawCanvas (ca, rootCanvas, ca.images[0], function (err, msg) {
+						if (err) throw err;
+						console.log (msg);
+					});	
+				}
+
+			}
+			}
+
+      	}
+      	function onMouseLeftClick(e) {
+      		var canvasArr = [computerCanvas, documentCanvas, garbageCanvas];
+   			var canvas = whichHit (canvasArr);
+   			var ca = whichClicked (canvasArr);
+   			if (canvas != null) {
+   				if (!canvas.clickedQ) {
+   					canvas.clickedQ = true;
+   					// remove pre clicked
+   					if (ca != null) {
+   						if (ca.clickedQ) {
+   							ca.clickedQ = false;
+   							drawCanvas (ca, rootCanvas, ca.images[0], function (err, msg) {
+								if (err) throw err;
+								console.log (msg);
+							});
+   						}
+   					}
+   					drawCanvas (canvas, rootCanvas, canvas.images[2], function (err, msg) {
+						if (err) throw err;
+						console.log (msg);
+					});
+   				} else {
+   					canvas.clickedQ = false;
+   					drawCanvas (canvas, rootCanvas, canvas.images[1], function (err, msg) {
+						if (err) throw err;
+						console.log (msg);
+					});
+   				}
+
+   			}
+   		}
+		function createButton(context, func) {
+    		var button = document.createElement("input");
+    		button.type = "button";
+    		button.value = "im a button";
+    		button.onclick = func;
+    		context.appendChild(button);
+		}
+		function canvasSupportQ () {
+			return !!document.createElement('canvas').getContext;
+  			//return Modernizr.canvas;
+		}
+		function drawRootCanvas(canvas, cb) {
+			var img = new Image();
+			img.onload = function () {
+				canvas.width = img.width;
+				canvas.height = img.height;
+				var ctx = canvas.getContext("2d");
+				ctx.drawImage(img, 0, 0);
+				ctx.save();
+				cb (null, 'desk laoded.');
+			}
+			img.src = "desk.jpg";
+		}
+		function createChildCanvas () {
+			computerCanvas = document.createElement("canvas");
+  			garbageCanvas = document.createElement("canvas");
+  			documentCanvas = document.createElement("canvas");
+  			addProperty (computerCanvas);
+  			addProperty (garbageCanvas);
+  			addProperty (documentCanvas);
+
+  			computerCanvas.images.push ('img/computer0.jpg');
+  			computerCanvas.images.push ('img/computer.jpg');
+  			computerCanvas.images.push ('img/computerClicked.jpg');
+
+  			documentCanvas.images.push ('img/document0.jpg');
+  			documentCanvas.images.push ('img/document.jpg');
+  			documentCanvas.images.push ('img/documentClicked.jpg');
+
+  			garbageCanvas.images.push ('img/garbage0.jpg');
+  			garbageCanvas.images.push ('img/garbage.jpg');
+  			garbageCanvas.images.push ('img/garbageClicked.jpg');
+		}
+		function initCanvas (canvas, x, y) {
+			var img = new Image();
+			img.onload = function () {
+				console.log (canvas.images[0]  + ' loaded.');
+				canvas.width = img.width;
+				canvas.height = img.height;
+				canvas.x = x;
+				canvas.y = y;
+				var ctx = canvas.getContext("2d");
+				ctx.drawImage(img, 0, 0);
+				ctx.save();
+				rootCanvas.getContext("2d").drawImage(canvas, canvas.x, canvas.y);
+			}
+			img.src = canvas.images[0];
+		}
+	</script>
+</head>
+<body>
+</body>
+</html>
